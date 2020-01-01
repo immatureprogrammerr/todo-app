@@ -1,0 +1,13 @@
+{
+  "app": {
+    "host" : "localhost",
+    "user" : "root",
+    "password" : "root",
+    "database" : "todo",
+    "port": 3307,
+    "pool": {
+      "min": 0,
+      "max": 10
+    }
+  }
+}

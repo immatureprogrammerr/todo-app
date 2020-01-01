@@ -1,0 +1,32 @@
+{
+  "certificates": {
+    "key": "/Applications/MAMP/htdocs/server-certificates/key.pem",
+    "cert": "/Applications/MAMP/htdocs/server-certificates/cert.pem",
+    "ca": false
+  },
+  "environment": "development",
+  "mds": {
+    "request_scheme": "https",
+    "fqdn_or_ip": "localhost",
+    "debug_mode": false
+  },
+  "app": {
+    "request_scheme": "https",
+    "ws_scheme": "wss",
+    "fqdn_or_ip": "localhost",
+    "app_dir": "to-do-app",
+    "is_proxy": 0,
+    "core": "8018",
+    "proxy": {
+      "core": "node-core",
+      "http": {
+        "core": "node-hcore"
+      }
+    },
+    "requestCert": false,
+    "rejectUnauthorized": false,
+    "serverkey": "/Applications/MAMP/htdocs/server-certificates/key.pem",
+    "servercert": "/Applications/MAMP/htdocs/server-certificates/cert.pem",
+    "ca": "/Applications/MAMP/htdocs/server-certificates/cert.pem"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "name": "todo-app",
+  "version": "1.0.0",
+  "private": true,
+  "contributors": [
+    {
+      "name": "Paras Sahu",
+      "email": "parasworkspace@gmail.com"
+    }
+  ],
+  "main": "core.js",
+  "dependencies": {
+    "body-parser": "^1.13.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "fs": "0.0.1-security",
+    "http-status-codes": "^1.3.0",
+    "is-json": "^2.0.1",
+    "is-valid-json": "^1.0.2",
+    "knex": "^0.14.4",
+    "mkdir-recursive": "^0.4.0",
+    "moment": "^2.20.1",
+    "mysql": "^2.17.1",
+    "nodemon": "^1.18.9",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.5",
+    "socket.io": "1.6.0",
+    "winston": "^3.0.0-rc1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "./node_modules/.bin/mocha 'test/**/*_test.js'",
+    "core": "nodemon core.js"
+  }
+}
