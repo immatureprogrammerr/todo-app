@@ -1,7 +1,7 @@
 {
   "certificates": {
-    "key": "/Applications/MAMP/htdocs/server-certificates/key.pem",
-    "cert": "/Applications/MAMP/htdocs/server-certificates/cert.pem",
+    "key": "../server-certificates/key.pem",
+    "cert": "../server-certificates/cert.pem",
     "ca": false
   },
   "environment": "development",
@@ -24,9 +24,6 @@
       }
     },
     "requestCert": false,
-    "rejectUnauthorized": false,
-    "serverkey": "/Applications/MAMP/htdocs/server-certificates/key.pem",
-    "servercert": "/Applications/MAMP/htdocs/server-certificates/cert.pem",
-    "ca": "/Applications/MAMP/htdocs/server-certificates/cert.pem"
+    "rejectUnauthorized": false
   }
 }
