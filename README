@@ -1,0 +1,10 @@
+<h2>ToDo App </h2>
+
+<p>
+User can do the following:
+<ul>
+<li>Get ToDo List</li>
+<li>Create a ToDo</li>
+<li>Delete a Todo by id</li>
+</ul>
+</p>
