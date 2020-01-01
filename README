@@ -20,4 +20,7 @@ Below mentioned the link for postman collection to access APIs:
 
 Link: https://www.getpostman.com/collections/63320c4e8a9b65b1381f
 
-Note: Postman Test cases has also been written, which will store the JWT token after envoking "/login" API.
+Note: 
+
+a. Postman Test cases has also been written, which will store the JWT token after envoking "/login" API.
+b. Kindly refer folder `postman` to get environment json
