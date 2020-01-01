@@ -8,7 +8,7 @@ ResStatus = require(__base +
   'components/core/helper/http-status-codes');
 
 /* GET :::: To Do List */
-router.get('/list/', (req, res, next) => {
+router.get('/', (req, res, next) => {
   toDo.list(userId = 1, (e, r) => {
     if(e) {
       console.log(e);
@@ -31,6 +31,71 @@ router.get('/list/', (req, res, next) => {
         'To Do'),
         data: r,
         response_tag: ResStatus.OK
+      });
+    }
+  });
+});
+
+/* POST :::: Create a To Do */
+router.post('/', (req, res, next) => {
+  let title = req.body.title;
+  toDo.create({
+    title
+  }, (e, r) => {
+    if(e) {
+      console.log(e);
+      res
+      .status(ResStatus.RECORD_CREATION_FAILURE)
+      .send({
+        status: false,
+        message: ResStatus.getMessage(ResStatus.RECORD_CREATION_FAILURE,
+        'To Do'),
+        data: [JSON.stringify(e)],
+        response_tag: ResStatus.RECORD_CREATION_FAILURE
+      });
+    }
+    if(r) {
+      res
+      .status(ResStatus.RECORD_CREATION_SUCCESS)
+      .send({
+        status: true,
+        message: ResStatus.getMessage(ResStatus.RECORD_CREATION_SUCCESS,
+        'To Do'),
+        data: r,
+        response_tag: ResStatus.RECORD_CREATION_SUCCESS
+      });
+    }
+  });
+});
+
+/* POST :::: Delete To Do */
+router.delete('/:todoID', (req, res, next) => {
+  let todoID = req.params.todoID;
+  console.log(todoID);
+  toDo.delete({
+    todoID
+  }, (e, r) => {
+    if(e) {
+      console.log(e);
+      res
+      .status(ResStatus.RECORD_DELETION_FAILURE)
+      .send({
+        status: false,
+        message: ResStatus.getMessage(ResStatus.RECORD_DELETION_FAILURE,
+        'To Do'),
+        data: [JSON.stringify(e)],
+        response_tag: ResStatus.RECORD_DELETION_FAILURE
+      });
+    }
+    if(r) {
+      res
+      .status(ResStatus.RECORD_DELETION_SUCCESS)
+      .send({
+        status: true,
+        message: ResStatus.getMessage(ResStatus.RECORD_DELETION_SUCCESS,
+        'To Do'),
+        data: r,
+        response_tag: ResStatus.RECORD_DELETION_SUCCESS
       });
     }
   });

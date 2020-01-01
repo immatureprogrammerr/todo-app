@@ -89,6 +89,8 @@ messageCodes[exports.BAD_REQUEST = 613] = "An error occurred while processing yo
 messageCodes[exports.ALREADY_REQUESTED = 614] = "Alredy send request .";
 messageCodes[exports.NOT_AVAILABLE_EVENT = 615] = "Sorry,Event Not Available.";
 messageCodes[exports.RECORD_DELETION_SUCCESS = 616] = "%s has been deleted";
+messageCodes[exports.RECORD_DELETION_FAILURE = 617] = "%s deletion has been failed";
+
 messageCodes[exports.RECORD_FOUND_SUCCESS = 620] = "%s found successfully";
 messageCodes[exports.RECORD_NOT_FOUND = 621] = "%s not found!";
 

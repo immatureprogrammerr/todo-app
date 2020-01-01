@@ -64,227 +64,30 @@ module.exports = {
         callback(err, null);
     });
 	},
-	insert: (type, moduleName, insertParam, options={}, callback) => {
-		if(type=='general') {
-			try {
-				let tableName = moduleName + '_' + options.masterTbl;
-				dbObj(tableName)
-				//.returning('cloud_id')
-				.insert(insertParam)
-				.then(function (idAry) {
-					try {
-						if(typeof idAry[0] != 'undefined') {
-							callback(null, idAry[0]);
-							return;
-						}
-					} catch(err) {
-						logger.log({level: 'debug', message: err});
+	insert: (tableName, insertParam, callback) => {
+		try {
+			dbObj(tableName)
+			//.returning('id')
+			.insert(insertParam)
+			.then(function (idAry) {
+				try {
+					if(typeof idAry[0] != 'undefined') {
+						callback(null, idAry[0]);
+						return;
 					}
-
-					callback(null, idAry);
-				})
-				.catch((err) => {
-					console.log(err);
-					callback(err, null);
-				});
-			} catch(err) {
-				logger.log({level: 'error', message: err.stack});
-			}
-		} else if(type=='master') {
-			try {
-				if(options.hasOwnProperty('masterTbl')) {
-					let assetsTableName = moduleName + '_assets';
-					let localeTableName = moduleName + '_locale';
-					let masterTableName = moduleName + '_' + options.masterTbl;
-					let assetKey = 0;
-					let assetInsertParams = [];
-						(insertParam.assets).forEach((a) => {
-							assetInsertParams.push({
-								asset_id: 0,
-								asset_key: 0,
-								type: a.hasOwnProperty('type') ? a.type : 'image',
-								file_path: a.hasOwnProperty('file_path') ? a.file_path : '',
-								position: 0,
-								hotel_id: a.hasOwnProperty('hotel_id') ? a.hotel_id : 0,
-								created_by: a.hasOwnProperty('created_by') ? a.created_by : 0,
-							});
-						});
-						dbObj.batchInsert(assetsTableName, assetInsertParams, 30) // 30 = chunk size
-						.returning('asset_id')
-						.then(function (idAry) {
-							if((Array.isArray(idAry) && idAry.length) > 0) {
-								let conditions = {
-									where: {
-										asset_id: idAry[0]
-									}
-								};
-								let updateParams = {
-									asset_key: idAry[0],
-									position: idAry[0]
-								};
-								assetKey = idAry[0]; // Update in assetKey column for the master table entry.
-								try {
-									module.exports.update(assetsTableName, conditions, updateParams, function(e, r){
-										
-										if(e) {
-											logger.log({level: 'error', message: e});
-											callback(e, null);
-										}
-
-										if(r) {
-											logger.log({level: 'debug', message: 'INSIDE IF CONDITION'});
-											let localeInsertParams = [];
-											let masterInsertParams = insertParam.master;
-											try {
-												
-												logger.log({level: 'debug', message: insertParam.locale});
-												
-												let localeFields = {};
-												(insertParam.locale).forEach((l) => {
-													localeFields = l.fields;
-													for(key in localeFields) {
-														localeInsertParams.push({
-															locale_id: 0,
-															lang_code: l.hasOwnProperty('lang_code') ? l.lang_code : 'en',
-															string_key: 0,
-															string: localeFields[key],
-															hotel_id: l.hasOwnProperty('hotel_id') ? l.hotel_id : 0,
-															created_by: l.hasOwnProperty('created_by') ? l.created_by : 0
-														});
-														masterInsertParams[key]
-													}
-												});
-											} catch(err) {
-												logger.log({level: 'error', message: err.stack});
-												logger.log({level: 'error', message: 'INSIDE IF CONDITION'});
-											}
-
-											logger.log({level: 'debug', message: masterInsertParams});
-											/* Locale Insertion */
-											
-											try {
-											
-											dbObj.batchInsert(localeTableName, localeInsertParams, 30) // 30 = chunk size
-											.returning(['locale_id'])
-											.then(function (idAry) {
-												logger.log({level: 'debug', message: JSON.stringify(idAry)});
-												try {
-													logger.log({level: 'debug', message: 'Locale returning array'});
-													let packLength = localeInsertParams.length - 1;
-													logger.log({level: 'debug', message: 'packLength = ' + packLength});
-													for(i=0; i<packLength; i++) {
-														idAry.push(idAry[0]++);
-													}
-													idAry.sort();
-													logger.log({level: 'debug', message: 'idAry' + JSON.stringify(idAry)});
-													if(Array.isArray(idAry) && idAry.length > 0) {
-														module.exports.updateRecursiveLocale(localeTableName, idAry, idAry.length, (urE, urR) => {
-														if(urR) {
-															try {
-																let masterInsertParams = insertParam.master;
-																let n = 0;
-																for(key in (insertParam.locale)[0].fields) {
-																	logger.log({level: 'debug', message: '*******KEY******* = ' + key});
-																	masterInsertParams[key] = idAry[n];
-																	n++;
-																}
-																
-																masterInsertParams['asset_key'] = assetKey;
-																dbObj.batchInsert(masterTableName, [masterInsertParams], 30) // 30 = chunk size
-																.returning('cloud_id')
-																.then(function (idAry) {
-																	callback(null, idAry[0]);
-																	// let conditions = {
-																	// 	where: {
-																	// 		cloud_id: idAry[0]
-																	// 	}
-																	// };
-																	// let masterPrimaryKey = options.masterPrimaryKey;
-																	// let updateParams = {};
-																	// updateParams[options.masterPrimaryKey] = idAry[0];
-																	// module.exports.update(masterTableName, conditions, updateParams, function(e, r){
-																	// 	logger.log({level: 'debug', message: 'INSIDE this.update'});
-																	// 	if(e) {
-																	// 		logger.log({level: 'error', message: e});
-																	// 		callback(e, null);
-																	// 	}
-																	// 	callback(null, idAry[0]); // Returning Movie ID.
-																	// });
-																	// logger.log({level: 'debug', message: 'Success in batch insert of master record'});
-																})
-																.catch((err) => {
-																	logger.log({level: 'error', message: err});
-																	callback(err, null);
-																});
-															} catch(err) {
-																logger.log({level: 'error', message: err});
-															}
-															}
-														});
-													} else {
-														callback(' [ASSETS TABLE] [DATA INSERTION] [ERROR] :: Table name `'+localeTableName+'` :: Returning ID is not in Array format.', null);
-														logger.log({level: 'error', message: ' [ASSETS TABLE] [DATA INSERTION] [ERROR] :: Table name `'+localeTableName+'` :: Returning ID is not in Array format.'});
-													}
-												} catch(err) {
-													logger.log({level: 'error', message: err.stack});
-												}
-											})
-											.catch((err) => {
-												logger.log({level: 'error', message: err});
-												callback(err, null);
-											});
-											} catch(err) {
-												logger.log({level: 'error', message: err.stack});
-											}
-		
-											/**/
-										}
-									});
-								} catch(err) {
-									logger.log({level: 'error', message: err.stack});
-								}
-							} else {
-								callback(' [ASSETS TABLE] [DATA INSERTION] [ERROR] :: Table name `'+assetsTableName+'` :: Returning ID is not in Array format.', null);
-								logger.log({level: 'error', message: ' [ASSETS TABLE] [DATA INSERTION] [ERROR] :: Table name `'+assetsTableName+'` :: Returning ID is not in Array format.'});
-							}
-						})
-						.catch((err) => {
-							logger.log({level: 'error', message: err});
-							callback(err, null);
-						});
-					
+				} catch(err) {
+					logger.log({level: 'debug', message: err});
 				}
-			} catch(err) {
-				logger.log({level: 'error', message: err.stack});
-			}			
+
+				callback(null, idAry);
+			})
+			.catch((err) => {
+				console.log(err);
+				callback(err, null);
+			});
+		} catch(err) {
+			logger.log({level: 'error', message: err.stack});
 		}
-	},
-	updateRecursiveLocale: (tableName, items, itemCount, callback) => {
-		
-		let queryUpdate = dbObj(tableName);
-		let conditions = {
-			where: {
-				locale_id: items[itemCount-1]
-			}
-		};
-
-		let updateParams = {
-			string_key: items[itemCount-1]
-		};
-
-		queryUpdate.update(updateParams)
-		queryUpdate.where(conditions.where)
-		.then(function (rows) {
-			if(itemCount-1 > 0) {
-				module.exports.updateRecursiveLocale(tableName, items, itemCount-1, callback);
-			} else {
-				callback(null, true);
-			}
-		})
-		.catch((err) => {
-			console.log(err);
-			callback(err, null);
-		});
 	},
 	update: (tableName, conditions, updateParam, callback) => {
 		let queryUpdate = dbObj(tableName)
@@ -322,6 +125,7 @@ module.exports = {
 				queryDelete.where(item.f, item.m, item.l);
 			});
 		}
+		
 		queryDelete.update(updateParam)
 			.then(function (rows) {
 				callback(null, rows);

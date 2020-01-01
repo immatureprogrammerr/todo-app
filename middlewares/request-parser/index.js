@@ -5,7 +5,7 @@ module.exports = (req, res, next) => {
   if(req.get('content-type').indexOf('application/vnd.paras.v1+json') != 0) {
     res.status(406).send();
   } else {
-    if(req.method!=='GET') {
+    if(req.method!=='GET' && req.method!=='DELETE') {
       let body = (req.body).toString();
       if(isJSON(body)) {
         req.body = JSON.parse(body);
