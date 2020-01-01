@@ -9,9 +9,12 @@ User can do the following:
 
 Installation Steps:
 
-1. Install MySQL database by referring the `.sql` file in directory named `database`
-2. To run test cases: `npm run test`
-3. To run server: `npm run server`
+1. Download project
+2. Change directory inside downloaded project
+3. Run `npm install`
+4. Install MySQL database by referring the `.sql` file in directory named `database`
+5. To run test cases: `npm run test`
+6. To run server: `npm run server`
 
 Below mentioned the link for postman collection to access APIs:
 
