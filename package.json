@@ -35,6 +35,7 @@
   "devDependencies": {},
   "scripts": {
     "test": "./node_modules/.bin/mocha --recursive --exit 'test/**/*-test.js'",
-    "core": "nodemon core.js"
+    "dev": "nodemon core.js",
+    "server": "node core.js"
   }
 }
