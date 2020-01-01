@@ -8,7 +8,6 @@ const callAndResponse = {
     console.log("tableName = " + tableName);
     return new Promise((resolve, reject) => {
       try {
-        console.log("Entered in try block");
         sql.select(
           tableName,
           ["task_id", "title"],
@@ -27,7 +26,7 @@ const callAndResponse = {
             if (r && Array.isArray(r) && r.length > 0) {
               resolve(r);
             } else {
-              resolve(false);
+              resolve([]);
             }
           }
         );
