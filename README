@@ -2,6 +2,19 @@ ToDo App
 
 User can do the following:
 
-1. Get ToDo List
-2. Create a ToDo
-3. Delete a Todo by id
+1. Login to server and get Token (JWT token) - { POST /login }
+2. Get ToDo List - { GET /todo }
+3. Create a ToDo - { POST /todo }
+4. Delete a Todo by id - { DELETE /todo }
+
+Installation Steps:
+
+1. Install MySQL database by referring the `.sql` file in directory named `database`
+2. To run test cases: `npm run test`
+3. To run server: `npm run server`
+
+Below mentioned the link for postman collection to access APIs:
+
+Link: https://www.getpostman.com/collections/63320c4e8a9b65b1381f
+
+Note: Postman Test cases has also been written, which will store the JWT token after envoking "/login" API.
