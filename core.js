@@ -67,10 +67,11 @@ const https = require('https'),
   serverPort = config.app.server.port,
   
   // MIDDLEWARES
-  requestParser = require('./middlewares/request-parser');
+  requestParser = require('./middlewares/request-parser'),
+  authCheck = require('./middlewares/auth'),
   
-  // COMPONENTS
-  
+  // ROUTES
+  login = require('./routes/login'),
   toDo = require('./routes/to-do');
 
 app.use(cors());
@@ -81,8 +82,9 @@ app.use(bodyParser.raw({
 }));
 
 app.use(requestParser);
-//app.use(auth);
+app.use('/login', login);
 
+app.use(authCheck);
 app.use('/todo', toDo);
 
 app.use(function (err, req, res, next) {
@@ -91,10 +93,10 @@ app.use(function (err, req, res, next) {
   res.status(401).send('<h2>Unauthorized Access !</h2>');
 });
 
-/** Disabling  x-powered-by Response header of Express HTTP Server */
+// Disabling  x-powered-by Response header of Express HTTP Server
 app.disable('x-powered-by');
 
-let socketAuth = function socketAuth(socket, next) {
+const socketAuth = function socketAuth(socket, next) {
   try {
     let access_token = socket.handshake.query.access_token;
   } catch (e) {
@@ -117,3 +119,5 @@ config.app.server.proxy.core : '';
 server.listen(serverPort, () => {
   log('Server started listening on port = ' + serverPort);
 }); // starting web server
+
+module.exports = server;

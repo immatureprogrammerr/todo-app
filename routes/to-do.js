@@ -1,5 +1,7 @@
 let express = require('express'),
 router = express.Router(),
+config = require(__base + 'config'),
+jwt = require('jsonwebtoken'),
 sql = require(__base + 
   'components/db-master/sql-queries'),
 toDo = require(__base + 
@@ -9,28 +11,42 @@ ResStatus = require(__base +
 
 /* GET :::: To Do List */
 router.get('/', (req, res, next) => {
-  toDo.list(userId = 1, (e, r) => {
-    if(e) {
-      console.log(e);
+  jwt.verify(req.token, config.app.secret, (err, authData) => {
+    if(err) {
       res
-      .status(ResStatus.OK)
+      .status(ResStatus.UNAUTHORIZED)
       .send({
-        status: false,
-        message: ResStatus.getMessage(ResStatus.OK,
-        'To Do'),
-        data: [JSON.stringify(e)],
-        response_tag: ResStatus.OK
+          status: false,
+          message: 'Request Unauthorized',
+          description: '',
+          data: [],
+          response_tag: ResStatus.UNAUTHORIZED
       });
-    }
-    if(r) {
-      res
-      .status(ResStatus.OK)
-      .send({
-        status: true,
-        message: ResStatus.getMessage(ResStatus.OK,
-        'To Do'),
-        data: r,
-        response_tag: ResStatus.OK
+    } else {
+      toDo.list(userId = 1, (e, r) => {
+        if(e) {
+          console.log(e);
+          res
+          .status(ResStatus.OK)
+          .send({
+            status: false,
+            message: ResStatus.getMessage(ResStatus.OK,
+            'To Do'),
+            data: [JSON.stringify(e)],
+            response_tag: ResStatus.OK
+          });
+        }
+        if(r) {
+          res
+          .status(ResStatus.OK)
+          .send({
+            status: true,
+            message: ResStatus.getMessage(ResStatus.OK,
+            'To Do'),
+            data: r,
+            response_tag: authData
+          });
+        }
       });
     }
   });
@@ -38,31 +54,45 @@ router.get('/', (req, res, next) => {
 
 /* POST :::: Create a To Do */
 router.post('/', (req, res, next) => {
-  let title = req.body.title;
-  toDo.create({
-    title
-  }, (e, r) => {
-    if(e) {
-      console.log(e);
+  jwt.verify(req.token, config.app.secret, (err, authData) => {
+    if(err) {
       res
-      .status(ResStatus.RECORD_CREATION_FAILURE)
+      .status(ResStatus.UNAUTHORIZED)
       .send({
-        status: false,
-        message: ResStatus.getMessage(ResStatus.RECORD_CREATION_FAILURE,
-        'To Do'),
-        data: [JSON.stringify(e)],
-        response_tag: ResStatus.RECORD_CREATION_FAILURE
+          status: false,
+          message: 'Request Unauthorized',
+          description: '',
+          data: [],
+          response_tag: ResStatus.UNAUTHORIZED
       });
-    }
-    if(r) {
-      res
-      .status(ResStatus.RECORD_CREATION_SUCCESS)
-      .send({
-        status: true,
-        message: ResStatus.getMessage(ResStatus.RECORD_CREATION_SUCCESS,
-        'To Do'),
-        data: r,
-        response_tag: ResStatus.RECORD_CREATION_SUCCESS
+    } else {
+      let title = req.body.title;
+      toDo.create({
+        title
+      }, (e, r) => {
+        if(e) {
+          console.log(e);
+          res
+          .status(ResStatus.RECORD_CREATION_FAILURE)
+          .send({
+            status: false,
+            message: ResStatus.getMessage(ResStatus.RECORD_CREATION_FAILURE,
+            'To Do'),
+            data: [JSON.stringify(e)],
+            response_tag: ResStatus.RECORD_CREATION_FAILURE
+          });
+        }
+        if(r) {
+          res
+          .status(ResStatus.RECORD_CREATION_SUCCESS)
+          .send({
+            status: true,
+            message: ResStatus.getMessage(ResStatus.RECORD_CREATION_SUCCESS,
+            'To Do'),
+            data: '',
+            response_tag: authData
+          });
+        }
       });
     }
   });
@@ -70,32 +100,45 @@ router.post('/', (req, res, next) => {
 
 /* POST :::: Delete To Do */
 router.delete('/:todoID', (req, res, next) => {
-  let todoID = req.params.todoID;
-  console.log(todoID);
-  toDo.delete({
-    todoID
-  }, (e, r) => {
-    if(e) {
-      console.log(e);
+  jwt.verify(req.token, config.app.secret, (err, authData) => {
+    if(err) {
       res
-      .status(ResStatus.RECORD_DELETION_FAILURE)
+      .status(ResStatus.UNAUTHORIZED)
       .send({
-        status: false,
-        message: ResStatus.getMessage(ResStatus.RECORD_DELETION_FAILURE,
-        'To Do'),
-        data: [JSON.stringify(e)],
-        response_tag: ResStatus.RECORD_DELETION_FAILURE
+          status: false,
+          message: 'Request Unauthorized',
+          description: '',
+          data: [],
+          response_tag: ResStatus.UNAUTHORIZED
       });
-    }
-    if(r) {
-      res
-      .status(ResStatus.RECORD_DELETION_SUCCESS)
-      .send({
-        status: true,
-        message: ResStatus.getMessage(ResStatus.RECORD_DELETION_SUCCESS,
-        'To Do'),
-        data: r,
-        response_tag: ResStatus.RECORD_DELETION_SUCCESS
+    } else {
+      let todoID = req.params.todoID;
+      toDo.delete({
+        todoID
+      }, (e, r) => {
+        if(e) {
+          console.log(e);
+          res
+          .status(ResStatus.RECORD_DELETION_FAILURE)
+          .send({
+            status: false,
+            message: ResStatus.getMessage(ResStatus.RECORD_DELETION_FAILURE,
+            'To Do'),
+            data: [JSON.stringify(e)],
+            response_tag: ResStatus.RECORD_DELETION_FAILURE
+          });
+        }
+        if(r) {
+          res
+          .status(ResStatus.RECORD_DELETION_SUCCESS)
+          .send({
+            status: true,
+            message: ResStatus.getMessage(ResStatus.RECORD_DELETION_SUCCESS,
+            'To Do'),
+            data: r,
+            response_tag: authData
+          });
+        }
       });
     }
   });

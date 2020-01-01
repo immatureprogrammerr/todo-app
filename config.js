@@ -25,6 +25,8 @@ module.exports = ( () => {
     },
     app: {
       environment: externalCredentials.environment,
+      secret: '12345asdf',
+      tokenLife: 900,
       server: {
         port: externalCredentials.app.core,
         logs: {
